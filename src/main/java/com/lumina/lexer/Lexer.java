@@ -72,7 +72,6 @@ public class Lexer {
     // -------------------------------------------------------
     private void scanToken() {
         char c = advance();
-        column++;
 
         switch (c) {
             // Delimitadores simples
