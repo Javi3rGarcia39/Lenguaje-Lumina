@@ -10,13 +10,13 @@ public enum TokenType {
     INT, FLOAT, BOOL, STRING,
 
     // Literales
-    INT_LITERAL,        // 42
-    FLOAT_LITERAL,      // 3.14
-    BOOL_LITERAL,       // true, false
-    STRING_LITERAL,     // "hola mundo"
+    INT_LITERAL,        // [0-9]+
+    FLOAT_LITERAL,      // [0-9]+\.[0-9]+
+    BOOL_LITERAL,       // true|false
+    STRING_LITERAL,     // "[^"]*"
 
     // Identificadores
-    IDENTIFIER,         // nombreVariable, nombreFuncion
+    IDENTIFIER,         // [a-zA-Z_][a-zA-Z0-9_]*
 
     // Palabras reservadas
     FUN,                // fun
