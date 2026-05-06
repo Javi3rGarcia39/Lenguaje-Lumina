@@ -1,0 +1,269 @@
+package com.lumina.parser;
+
+import com.lumina.lexer.Lexer;
+import com.lumina.symbols.SymbolTable;
+import com.lumina.error.ErrorHandler;
+import java_cup.runtime.*;
+
+parser code {:
+    public int getExpectedConflicts() { return 1; }
+
+    private SymbolTable symbolTable;
+    private ErrorHandler errorHandler;
+
+    public void setSymbolTable(SymbolTable symbolTable) {
+        this.symbolTable = symbolTable;
+    }
+
+    public void setErrorHandler(ErrorHandler errorHandler) {
+        this.errorHandler = errorHandler;
+    }
+
+    @Override
+    public void report_error(String message, Object info) {
+        if (info instanceof Symbol) {
+            Symbol s = (Symbol) info;
+            errorHandler.syntacticError(message, s.left, s.right);
+        } else {
+            errorHandler.syntacticError(message, 0, 0);
+        }
+    }
+
+    @Override
+    public void report_fatal_error(String message, Object info) {
+        report_error(message, info);
+    }
+:}
+
+/* -------------------------------------------------------
+   TERMINALES
+   ------------------------------------------------------- */
+terminal            FUN, VAR, RETURN, IF, ELSE, WHILE, FOR, PRINT;
+terminal            AND, OR, NOT, NULL;
+terminal            TYPE_INT, TYPE_FLOAT, TYPE_BOOL, TYPE_STRING;
+terminal            PLUS, MINUS, STAR, SLASH, PERCENT;
+terminal            PLUS_EQUAL, MINUS_EQUAL, STAR_EQUAL, SLASH_EQUAL;
+terminal            EQUAL, EQUAL_EQUAL, BANG_EQUAL;
+terminal            LESS, LESS_EQUAL, GREATER, GREATER_EQUAL;
+terminal            ARROW;
+terminal            LEFT_PAREN, RIGHT_PAREN;
+terminal            LEFT_BRACE, RIGHT_BRACE;
+terminal            LEFT_BRACKET, RIGHT_BRACKET;
+terminal            COMMA, SEMICOLON, COLON, DOT;
+terminal            UMINUS;
+terminal Integer    INT_LITERAL;
+terminal Double     FLOAT_LITERAL;
+terminal Boolean    BOOL_LITERAL;
+terminal String     STRING_LITERAL;
+terminal String     IDENTIFIER;
+
+/* -------------------------------------------------------
+   NO TERMINALES
+   ------------------------------------------------------- */
+non terminal        program;
+non terminal        top_list, top_decl;
+non terminal        fun_decl;
+non terminal        param_list, param_list_opt, param;
+non terminal        type;
+non terminal        block, stmt_list, stmt;
+non terminal        var_decl;
+non terminal        if_stmt, while_stmt, for_stmt, return_stmt, print_stmt;
+non terminal        expr, assignment;
+non terminal        logic_or, logic_and;
+non terminal        equality, comparison;
+non terminal        term, factor, unary, primary;
+non terminal        arg_list, arg_list_opt;
+
+/* -------------------------------------------------------
+   PRECEDENCIA
+   ------------------------------------------------------- */
+precedence left     OR;
+precedence left     AND;
+precedence right    NOT;
+precedence left     EQUAL_EQUAL, BANG_EQUAL;
+precedence left     LESS, LESS_EQUAL, GREATER, GREATER_EQUAL;
+precedence left     PLUS, MINUS;
+precedence left     STAR, SLASH, PERCENT;
+precedence right    UMINUS;
+precedence left     LEFT_PAREN;
+
+/* -------------------------------------------------------
+   GRAMATICA
+   ------------------------------------------------------- */
+
+program ::= top_list
+;
+
+/* El nivel superior solo acepta funciones y variables globales */
+top_list ::=
+      top_list top_decl
+    | /* vacio */
+;
+
+top_decl ::=
+      fun_decl
+    | var_decl
+;
+
+/* -------------------------------------------------------
+   FUNCIONES
+   ------------------------------------------------------- */
+fun_decl ::=
+    FUN IDENTIFIER LEFT_PAREN param_list_opt RIGHT_PAREN ARROW type block
+;
+
+param_list_opt ::=
+      param_list
+    | /* vacio */
+;
+
+param_list ::=
+      param_list COMMA param
+    | param
+;
+
+param ::=
+    IDENTIFIER COLON type
+;
+
+/* -------------------------------------------------------
+   TIPOS
+   ------------------------------------------------------- */
+type ::=
+      TYPE_INT
+    | TYPE_FLOAT
+    | TYPE_BOOL
+    | TYPE_STRING
+;
+
+/* -------------------------------------------------------
+   BLOQUE Y SENTENCIAS
+   ------------------------------------------------------- */
+block ::=
+    LEFT_BRACE stmt_list RIGHT_BRACE
+;
+
+stmt_list ::=
+      stmt_list stmt
+    | /* vacio */
+;
+
+stmt ::=
+      var_decl
+    | if_stmt
+    | while_stmt
+    | for_stmt
+    | return_stmt
+    | print_stmt
+    | expr
+;
+
+/* -------------------------------------------------------
+   DECLARACION DE VARIABLES
+   ------------------------------------------------------- */
+var_decl ::=
+    VAR IDENTIFIER COLON type EQUAL expr
+;
+
+/* -------------------------------------------------------
+   ESTRUCTURAS DE CONTROL
+   ------------------------------------------------------- */
+if_stmt ::=
+      IF LEFT_PAREN expr RIGHT_PAREN block
+    | IF LEFT_PAREN expr RIGHT_PAREN block ELSE block
+;
+
+while_stmt ::=
+    WHILE LEFT_PAREN expr RIGHT_PAREN block
+;
+
+for_stmt ::=
+    FOR LEFT_PAREN var_decl SEMICOLON expr SEMICOLON expr RIGHT_PAREN block
+;
+
+return_stmt ::=
+    RETURN expr
+;
+
+print_stmt ::=
+    PRINT LEFT_PAREN expr RIGHT_PAREN
+;
+
+/* -------------------------------------------------------
+   EXPRESIONES
+   ------------------------------------------------------- */
+expr ::= assignment
+;
+
+assignment ::=
+      IDENTIFIER EQUAL expr
+    | IDENTIFIER PLUS_EQUAL expr
+    | IDENTIFIER MINUS_EQUAL expr
+    | IDENTIFIER STAR_EQUAL expr
+    | IDENTIFIER SLASH_EQUAL expr
+    | logic_or
+;
+
+logic_or ::=
+      logic_or OR logic_and
+    | logic_and
+;
+
+logic_and ::=
+      logic_and AND equality
+    | equality
+;
+
+equality ::=
+      equality EQUAL_EQUAL comparison
+    | equality BANG_EQUAL comparison
+    | comparison
+;
+
+comparison ::=
+      comparison LESS term
+    | comparison LESS_EQUAL term
+    | comparison GREATER term
+    | comparison GREATER_EQUAL term
+    | term
+;
+
+term ::=
+      term PLUS factor
+    | term MINUS factor
+    | factor
+;
+
+factor ::=
+      factor STAR unary
+    | factor SLASH unary
+    | factor PERCENT unary
+    | unary
+;
+
+unary ::=
+      NOT unary
+    | MINUS unary %prec UMINUS
+    | primary
+;
+
+primary ::=
+      INT_LITERAL
+    | FLOAT_LITERAL
+    | BOOL_LITERAL
+    | STRING_LITERAL
+    | NULL
+    | IDENTIFIER LEFT_PAREN arg_list_opt RIGHT_PAREN
+    | IDENTIFIER
+    | LEFT_PAREN expr RIGHT_PAREN
+;
+
+arg_list_opt ::=
+      arg_list
+    | /* vacio */
+;
+
+arg_list ::=
+      arg_list COMMA expr
+    | expr
+;
