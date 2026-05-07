@@ -1,0 +1,8 @@
+# Prueba de error lexico
+
+fun main() -> int {
+    var x: int = 10
+    var y: int = 20@
+    var z: int = x + y
+    return 0
+}

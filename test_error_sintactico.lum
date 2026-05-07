@@ -1,0 +1,7 @@
+# Prueba de error sintactico
+
+fun main() -> int {
+    var x int = 10
+    var y: int = 20
+    return 0
+}

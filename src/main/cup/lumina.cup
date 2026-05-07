@@ -33,6 +33,11 @@ parser code {:
     public void report_fatal_error(String message, Object info) {
         report_error(message, info);
     }
+
+    @Override
+    public void unrecovered_syntax_error(Symbol cur_token) throws Exception {
+        report_error("Error sintactico irrecuperable", cur_token);
+    }
 :}
 
 /* -------------------------------------------------------
