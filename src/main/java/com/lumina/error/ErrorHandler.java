@@ -9,10 +9,6 @@ import java.util.List;
 
 public class ErrorHandler {
 
-    // -------------------------------------------------------
-    // CLASE INTERNA -- representa un error individual
-    // -------------------------------------------------------
-
     public static class LuminaError {
 
         public enum ErrorType {
@@ -40,9 +36,7 @@ public class ErrorHandler {
         }
     }
 
-    // -------------------------------------------------------
-    // ESTADO
-    // -------------------------------------------------------
+    // ESTADO-------------------------------------------------
 
     private final List<LuminaError> errors;
     private boolean hasErrors;
@@ -52,9 +46,7 @@ public class ErrorHandler {
         this.hasErrors = false;
     }
 
-    // -------------------------------------------------------
-    // REGISTRO DE ERRORES
-    // -------------------------------------------------------
+    // REGISTRO DE ERRORES------------------------------------
 
     public void lexicalError(String message, int line, int column) {
         register(LuminaError.ErrorType.LEXICAL, message, line, column);
@@ -74,9 +66,7 @@ public class ErrorHandler {
         hasErrors = true;
     }
 
-    // -------------------------------------------------------
-    // CONSULTA
-    // -------------------------------------------------------
+    // CONSULTA-----------------------------------------------
 
     public boolean hasErrors() {
         return hasErrors;
@@ -90,9 +80,7 @@ public class ErrorHandler {
         return errors.size();
     }
 
-    // -------------------------------------------------------
-    // REPORTE
-    // -------------------------------------------------------
+    // REPORTE------------------------------------------------
 
     public void printErrors() {
         if (!hasErrors) {

@@ -18,8 +18,6 @@ public class Main {
 
         String filePath;
 
-        // Si se pasa un archivo como argumento lo usa
-        // Si no, usa el archivo de prueba por defecto
         if (args.length > 0) {
             filePath = args[0];
         } else {
@@ -43,12 +41,6 @@ public class Main {
         SymbolTable symbolTable = new SymbolTable();
 
         try {
-            // Suprimir mensajes internos de JCup
-            System.setErr(new java.io.PrintStream(new java.io.OutputStream() {
-                public void write(int b) {
-                }
-            }));
-
             Lexer lexer = new Lexer(new FileReader(filePath));
             lexer.setErrorHandler(errorHandler);
 

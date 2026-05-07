@@ -11,9 +11,7 @@ import java.util.Stack;
 
 public class SymbolTable {
 
-    // -------------------------------------------------------
-    // CLASE INTERNA -- representa un simbolo en la tabla
-    // -------------------------------------------------------
+    // CLASE INTERNA -- representa un simbolo en la tabla-----
 
     public static class Symbol {
 
@@ -47,9 +45,7 @@ public class SymbolTable {
         }
     }
 
-    // -------------------------------------------------------
-    // ESTADO -- pila de ambitos (scopes)
-    // -------------------------------------------------------
+    // ESTADO -- pila de ambitos (scopes)---------------------
 
     private final Stack<Map<String, Symbol>> scopes;
 
@@ -58,9 +54,7 @@ public class SymbolTable {
         enterScope(); // ambito global
     }
 
-    // -------------------------------------------------------
-    // GESTION DE AMBITOS
-    // -------------------------------------------------------
+    // GESTION DE AMBITOS-------------------------------------
 
     // Abre un nuevo ambito (al entrar a una funcion o bloque)
     public void enterScope() {
@@ -78,9 +72,7 @@ public class SymbolTable {
         return scopes.size();
     }
 
-    // -------------------------------------------------------
-    // INSERCION
-    // -------------------------------------------------------
+    // INSERCION----------------------------------------------
 
     // Retorna true si se inserto correctamente
     // Retorna false si ya existia en el ambito actual
@@ -104,9 +96,7 @@ public class SymbolTable {
         }
     }
 
-    // -------------------------------------------------------
-    // BUSQUEDA
-    // -------------------------------------------------------
+    // BUSQUEDA-----------------------------------------------
 
     // Busca desde el ambito actual hacia el global
     public Symbol resolve(String name) {
@@ -124,9 +114,7 @@ public class SymbolTable {
         return scopes.peek().containsKey(name);
     }
 
-    // -------------------------------------------------------
-    // REPORTE
-    // -------------------------------------------------------
+    // REPORTE------------------------------------------------
 
     public void printTable() {
         System.out.println("=== TABLA DE SIMBOLOS ===\n");
