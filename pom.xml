@@ -26,11 +26,11 @@
             <scope>test</scope>
         </dependency>
 
-        <!-- JCup runtime (necesario en ejecucion) -->
+        <!-- JCup runtime desde lib local -->
         <dependency>
-            <groupId>com.github.vbmacher</groupId>
-            <artifactId>java-cup-runtime</artifactId>
-            <version>11b-20160615</version>
+            <groupId>java-cup</groupId>
+            <artifactId>java-cup-11b-runtime</artifactId>
+            <version>11b</version>
         </dependency>
     </dependencies>
 
@@ -60,7 +60,7 @@
                         </goals>
                         <configuration>
                             <lexDefinitions>
-                                <lexDefinition>src/main/jflex/lumina.flex</lexDefinition>
+                                <lexDefinition>src/main/jflex/LexerCup.flex</lexDefinition>
                             </lexDefinitions>
                             <outputDirectory>src/main/java</outputDirectory>
                         </configuration>
@@ -69,24 +69,23 @@
             </plugin>
 
             <!-- JCup -->
-           <!-- JCup -->
-<plugin>
-    <groupId>com.github.vbmacher</groupId>
-    <artifactId>cup-maven-plugin</artifactId>
-    <version>11b-20160615</version>
-    <executions>
-        <execution>
-            <goals>
-                <goal>generate</goal>
-            </goals>
-            <configuration>
-                <cupDefinition>src/main/cup/lumina.cup</cupDefinition>
-                <className>Parser</className>
-                <symbolsName>sym</symbolsName>
-            </configuration>
-        </execution>
-    </executions>
-</plugin>
+            <plugin>
+                <groupId>com.github.vbmacher</groupId>
+                <artifactId>cup-maven-plugin</artifactId>
+                <version>11b-20160615</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <cupDefinition>src/main/cup/Sintax.cup</cupDefinition>
+                            <className>Parser</className>
+                            <symbolsName>sym</symbolsName>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
 
             <!-- Ejecutar Main -->
             <plugin>
