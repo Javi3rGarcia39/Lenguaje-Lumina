@@ -6,7 +6,6 @@ package com.lumina;
 import com.lumina.error.ErrorHandler;
 import com.lumina.lexer.Lexer;
 import com.lumina.parser.Parser;
-import com.lumina.symbols.SymbolTable;
 import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -38,7 +37,6 @@ public class Main {
         System.out.println();
 
         ErrorHandler errorHandler = new ErrorHandler();
-        SymbolTable symbolTable = new SymbolTable();
 
         try {
             Lexer lexer = new Lexer(new FileReader(filePath));
@@ -46,7 +44,6 @@ public class Main {
 
             Parser parser = new Parser(lexer);
             parser.setErrorHandler(errorHandler);
-            parser.setSymbolTable(symbolTable);
 
             parser.parse();
             System.out.println("Analisis completado.");
@@ -62,6 +59,5 @@ public class Main {
         errorHandler.printErrors();
 
         System.out.println();
-        symbolTable.printTable();
     }
 }

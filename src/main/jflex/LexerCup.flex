@@ -30,7 +30,7 @@ import com.lumina.parser.sym;
     }
 %}
 
-/* Expresiones regulares nombradas */
+// Expresiones regulares
 LineTerminator  = \r|\n|\r\n
 WhiteSpace      = {LineTerminator} | [ \t\f]
 Comment         = "#" [^\r\n]*
@@ -46,7 +46,7 @@ Identifier      = {Letter}{AlphaNum}*
 
 %%
 
-/* Palabras reservadas */
+//Palabras reservadas
 "fun"       { return token(sym.FUN); }
 "var"       { return token(sym.VAR); }
 "return"    { return token(sym.RETURN); }
@@ -66,29 +66,29 @@ Identifier      = {Letter}{AlphaNum}*
 "bool"      { return token(sym.TYPE_BOOL); }
 "string"    { return token(sym.TYPE_STRING); }
 
-/* Literales */
+//Literales
 {IntLiteral}    { return token(sym.INT_LITERAL,    Integer.parseInt(yytext())); }
 {FloatLiteral}  { return token(sym.FLOAT_LITERAL,  Double.parseDouble(yytext())); }
 {StringLiteral} { return token(sym.STRING_LITERAL, yytext().substring(1, yytext().length() - 1)); }
 
-/* Identificadores */
+//Identificadores
 {Identifier}    { return token(sym.IDENTIFIER, yytext()); }
 
-/* Operadores aritmeticos */
+//Operadores aritmeticos
 "+"     { return token(sym.PLUS); }
 "-"     { return token(sym.MINUS); }
 "*"     { return token(sym.STAR); }
 "/"     { return token(sym.SLASH); }
 "%"     { return token(sym.PERCENT); }
 
-/* Operadores de asignacion */
+//Operadores de asignacion
 "+="    { return token(sym.PLUS_EQUAL); }
 "-="    { return token(sym.MINUS_EQUAL); }
 "*="    { return token(sym.STAR_EQUAL); }
 "/="    { return token(sym.SLASH_EQUAL); }
 "="     { return token(sym.EQUAL); }
 
-/* Operadores relacionales */
+//Operadores relacionales
 "=="    { return token(sym.EQUAL_EQUAL); }
 "!="    { return token(sym.BANG_EQUAL); }
 "<="    { return token(sym.LESS_EQUAL); }
@@ -96,10 +96,10 @@ Identifier      = {Letter}{AlphaNum}*
 "<"     { return token(sym.LESS); }
 ">"     { return token(sym.GREATER); }
 
-/* Flecha de retorno */
+//Flecha de retorno
 "->"    { return token(sym.ARROW); }
 
-/* Delimitadores */
+//Delimitadores
 "("     { return token(sym.LEFT_PAREN); }
 ")"     { return token(sym.RIGHT_PAREN); }
 "{"     { return token(sym.LEFT_BRACE); }
@@ -111,11 +111,11 @@ Identifier      = {Letter}{AlphaNum}*
 ":"     { return token(sym.COLON); }
 "."     { return token(sym.DOT); }
 
-/* Comentarios y espacios -- ignorar */
+//Comentarios y espacios
 {Comment}       { /* ignorar */ }
 {WhiteSpace}    { /* ignorar */ }
 
-/* Error lexico */
+//Error lexico
 [^]  {
     if (errorHandler != null) {
         errorHandler.lexicalError(

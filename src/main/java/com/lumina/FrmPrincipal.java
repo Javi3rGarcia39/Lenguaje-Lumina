@@ -1,13 +1,8 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package com.lumina;
 
 import com.lumina.error.ErrorHandler;
 import com.lumina.lexer.Lexer;
 import com.lumina.parser.Parser;
-import com.lumina.symbols.SymbolTable;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
@@ -16,52 +11,49 @@ import java_cup.runtime.Symbol;
 import javax.swing.*;
 import javax.swing.border.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.JTableHeader;
 import javax.swing.text.*;
-
-/**
- *
- * @author Javi3Rex39
- */
-
 
 public class FrmPrincipal extends JFrame {
 
     // -------------------------------------------------------
     // COLORES -- tema oscuro
     // -------------------------------------------------------
-    private static final Color DARK_BG        = new Color(30, 30, 30);
-    private static final Color DARK_PANEL     = new Color(37, 37, 38);
-    private static final Color DARK_SIDEBAR   = new Color(51, 51, 51);
-    private static final Color DARK_EDITOR    = new Color(30, 30, 30);
-    private static final Color DARK_LINE_NUM  = new Color(51, 51, 51);
-    private static final Color DARK_TEXT      = new Color(212, 212, 212);
-    private static final Color DARK_SUBTEXT   = new Color(153, 153, 153);
-    private static final Color DARK_ACCENT    = new Color(0, 122, 204);
-    private static final Color DARK_SUCCESS   = new Color(78, 201, 176);
-    private static final Color DARK_ERROR     = new Color(244, 135, 113);
-    private static final Color DARK_WARNING   = new Color(220, 220, 170);
-    private static final Color DARK_BORDER    = new Color(60, 60, 60);
-    private static final Color DARK_BUTTON    = new Color(14, 99, 156);
-    private static final Color DARK_TAB_ACTIVE= new Color(30, 30, 30);
+    private static final Color DARK_BG = new Color(30, 30, 30);
+    private static final Color DARK_PANEL = new Color(37, 37, 38);
+    private static final Color DARK_SIDEBAR = new Color(51, 51, 51);
+    private static final Color DARK_EDITOR = new Color(30, 30, 30);
+    private static final Color DARK_LINE_NUM = new Color(51, 51, 51);
+    private static final Color DARK_TEXT = new Color(212, 212, 212);
+    private static final Color DARK_SUBTEXT = new Color(153, 153, 153);
+    private static final Color DARK_ACCENT = new Color(0, 122, 204);
+    private static final Color DARK_SUCCESS = new Color(78, 201, 176);
+    private static final Color DARK_ERROR = new Color(244, 135, 113);
+    private static final Color DARK_WARNING = new Color(220, 220, 170);
+    private static final Color DARK_BORDER = new Color(60, 60, 60);
+    private static final Color DARK_BUTTON = new Color(14, 99, 156);
+    private static final Color DARK_TAB_ACTIVE = new Color(30, 30, 30);
     private static final Color DARK_TAB_INACTIVE = new Color(45, 45, 45);
 
     // -------------------------------------------------------
     // COLORES -- tema claro
     // -------------------------------------------------------
-    private static final Color LIGHT_BG       = new Color(255, 255, 255);
-    private static final Color LIGHT_PANEL    = new Color(243, 243, 243);
-    private static final Color LIGHT_SIDEBAR  = new Color(248, 248, 248);
-    private static final Color LIGHT_EDITOR   = new Color(255, 255, 255);
+    private static final Color LIGHT_BG = new Color(255, 255, 255);
+    private static final Color LIGHT_PANEL = new Color(243, 243, 243);
+    private static final Color LIGHT_SIDEBAR = new Color(248, 248, 248);
+    private static final Color LIGHT_EDITOR = new Color(255, 255, 255);
     private static final Color LIGHT_LINE_NUM = new Color(237, 237, 237);
-    private static final Color LIGHT_TEXT     = new Color(30, 30, 30);
-    private static final Color LIGHT_SUBTEXT  = new Color(100, 100, 100);
-    private static final Color LIGHT_ACCENT   = new Color(0, 122, 204);
-    private static final Color LIGHT_SUCCESS  = new Color(0, 128, 0);
-    private static final Color LIGHT_ERROR    = new Color(205, 49, 49);
-    private static final Color LIGHT_WARNING  = new Color(128, 128, 0);
-    private static final Color LIGHT_BORDER   = new Color(220, 220, 220);
-    private static final Color LIGHT_BUTTON   = new Color(0, 122, 204);
-    private static final Color LIGHT_TAB_ACTIVE   = new Color(255, 255, 255);
+    private static final Color LIGHT_TEXT = new Color(30, 30, 30);
+    private static final Color LIGHT_SUBTEXT = new Color(100, 100, 100);
+    private static final Color LIGHT_ACCENT = new Color(0, 122, 204);
+    private static final Color LIGHT_SUCCESS = new Color(0, 128, 0);
+    private static final Color LIGHT_ERROR = new Color(205, 49, 49);
+    private static final Color LIGHT_WARNING = new Color(128, 128, 0);
+    private static final Color LIGHT_BORDER = new Color(220, 220, 220);
+    private static final Color LIGHT_BUTTON = new Color(0, 122, 204);
+    private static final Color LIGHT_TAB_ACTIVE = new Color(255, 255, 255);
     private static final Color LIGHT_TAB_INACTIVE = new Color(236, 236, 236);
 
     // -------------------------------------------------------
@@ -87,16 +79,18 @@ public class FrmPrincipal extends JFrame {
 
     // Tabs de resultados
     private JTabbedPane tabResults;
-    private JTextArea txtTokens;
-    private JTextArea txtErrors;
-    private JTextArea txtSymbols;
-    private JTextArea txtConsole;
+    private JTable      tblTokens;
+    private JTable      tblErrors;
+    private JTable      tblSymbols;
+    private JTextArea   txtConsole;
+    private JLabel      lblTokenCount;
 
     // Barra de estado
     private JPanel statusBar;
     private JLabel lblStatus;
     private JLabel lblCursor;
     private JLabel lblLang;
+    private JPanel toolbar;
 
     // Botones
     private JButton btnOpen;
@@ -115,8 +109,9 @@ public class FrmPrincipal extends JFrame {
         setLocationRelativeTo(null);
 
         try {
-            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-        } catch (Exception ignored) {}
+            UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
+        } catch (Exception ignored) {
+        }
 
         buildUI();
         applyTheme();
@@ -188,13 +183,13 @@ public class FrmPrincipal extends JFrame {
     }
 
     private void buildToolBar() {
-        JPanel toolbar = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 6));
+        toolbar = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 6));
         toolbar.setPreferredSize(new Dimension(0, 42));
 
-        btnOpen    = toolButton("📂 Abrir",    "Abrir archivo .lum o .txt");
-        btnSave    = toolButton("💾 Guardar",  "Guardar archivo actual");
-        btnAnalyze = toolButton("▶ Analizar",  "Ejecutar analisis lexico y sintactico");
-        btnClear   = toolButton("🗑 Limpiar",  "Limpiar todos los paneles");
+        btnOpen = toolButton("Abrir", "Abrir archivo .lum o .txt");
+        btnSave = toolButton("Guardar", "Guardar archivo actual");
+        btnAnalyze = toolButton("Analizar", "Ejecutar analisis lexico y sintactico");
+        btnClear = toolButton("Limpiar", "Limpiar todos los paneles");
 
         btnOpen.addActionListener(e -> openFile());
         btnSave.addActionListener(e -> saveFile());
@@ -202,15 +197,10 @@ public class FrmPrincipal extends JFrame {
         btnClear.addActionListener(e -> clearAll());
 
         toolbar.add(btnOpen);
-        toolbar.add(new JSeparator(JSeparator.VERTICAL));
         toolbar.add(btnSave);
-        toolbar.add(new JSeparator(JSeparator.VERTICAL));
         toolbar.add(btnAnalyze);
         toolbar.add(btnClear);
 
-        mainPanel.add(toolbar, BorderLayout.AFTER_LINE_ENDS);
-
-        // Lo ponemos debajo del titleBar via un segundo BorderLayout
         JPanel north = new JPanel(new BorderLayout());
         north.add(titleBar, BorderLayout.NORTH);
         north.add(toolbar, BorderLayout.SOUTH);
@@ -220,10 +210,15 @@ public class FrmPrincipal extends JFrame {
     private JButton toolButton(String text, String tooltip) {
         JButton btn = new JButton(text);
         btn.setToolTipText(tooltip);
-        btn.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+        btn.setFont(new Font("Segoe UI", Font.BOLD, 12));
         btn.setFocusPainted(false);
+        btn.setContentAreaFilled(true);
+        btn.setBorderPainted(false);
+        btn.setOpaque(true);
         btn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        btn.setPreferredSize(new Dimension(110, 28));
+        btn.setPreferredSize(new Dimension(100, 28));
+        btn.setBackground(new Color(14, 99, 156));
+        btn.setForeground(Color.WHITE);
         return btn;
     }
 
@@ -260,9 +255,18 @@ public class FrmPrincipal extends JFrame {
 
         // Sincronizar numeros de linea
         txtEditor.getDocument().addDocumentListener(new javax.swing.event.DocumentListener() {
-            public void insertUpdate(javax.swing.event.DocumentEvent e) { updateLineNumbers(); updateStatus(); }
-            public void removeUpdate(javax.swing.event.DocumentEvent e) { updateLineNumbers(); updateStatus(); }
-            public void changedUpdate(javax.swing.event.DocumentEvent e) {}
+            public void insertUpdate(javax.swing.event.DocumentEvent e) {
+                updateLineNumbers();
+                updateStatus();
+            }
+
+            public void removeUpdate(javax.swing.event.DocumentEvent e) {
+                updateLineNumbers();
+                updateStatus();
+            }
+
+            public void changedUpdate(javax.swing.event.DocumentEvent e) {
+            }
         });
 
         txtEditor.addCaretListener(e -> updateCursor());
@@ -273,8 +277,8 @@ public class FrmPrincipal extends JFrame {
         editorScroll.getVerticalScrollBar().setUnitIncrement(16);
 
         // Sincronizar scroll de numeros
-        editorScroll.getViewport().addChangeListener(e ->
-            txtLineNumbers.repaint()
+        editorScroll.getViewport().addChangeListener(e
+                -> txtLineNumbers.repaint()
         );
 
         editorPanel.add(editorHeader, BorderLayout.NORTH);
@@ -285,15 +289,34 @@ public class FrmPrincipal extends JFrame {
         tabResults.setFont(new Font("Segoe UI", Font.PLAIN, 12));
         tabResults.setTabPlacement(JTabbedPane.TOP);
 
-        txtTokens  = resultArea();
-        txtErrors  = resultArea();
-        txtSymbols = resultArea();
-        txtConsole = resultArea();
+        // --- Tab Tokens ---
+        tblTokens = makeTable(new String[]{"#", "TIPO", "VALOR", "LINEA", "COL"});
+        setColumnWidths(tblTokens, new int[]{35, 150, 120, 55, 55});
+        JPanel tokensPanel = new JPanel(new BorderLayout());
+        tokensPanel.add(new JScrollPane(tblTokens), BorderLayout.CENTER);
+        lblTokenCount = new JLabel("  Total: 0 tokens");
+        lblTokenCount.setFont(new Font("Segoe UI", Font.PLAIN, 11));
+        lblTokenCount.setBorder(BorderFactory.createEmptyBorder(4, 6, 4, 6));
+        tokensPanel.add(lblTokenCount, BorderLayout.SOUTH);
 
-        tabResults.addTab("🔤 Tokens",         new JScrollPane(txtTokens));
-        tabResults.addTab("⚠ Errores",         new JScrollPane(txtErrors));
-        tabResults.addTab("📋 Tabla Simbolos",  new JScrollPane(txtSymbols));
-        tabResults.addTab("💻 Consola",         new JScrollPane(txtConsole));
+        // --- Tab Errores ---
+        tblErrors = makeTable(new String[]{"TIPO", "LINEA", "COL", "MENSAJE"});
+        setColumnWidths(tblErrors, new int[]{80, 55, 55, 400});
+
+        // --- Tab Tabla Simbolos ---
+        tblSymbols = makeTable(new String[]{"NOMBRE", "TIPO", "CLASE", "LINEA", "COL", "INIT"});
+        setColumnWidths(tblSymbols, new int[]{120, 80, 80, 55, 55, 60});
+
+        // --- Tab Consola ---
+        txtConsole = new JTextArea();
+        txtConsole.setFont(new Font("JetBrains Mono", Font.PLAIN, 12));
+        txtConsole.setEditable(false);
+        txtConsole.setBorder(BorderFactory.createEmptyBorder(8, 10, 8, 10));
+
+        tabResults.addTab("Tokens",         tokensPanel);
+        tabResults.addTab("Errores",        new JScrollPane(tblErrors));
+        tabResults.addTab("Tabla Simbolos", new JScrollPane(tblSymbols));
+        tabResults.addTab("Consola",        new JScrollPane(txtConsole));
 
         split.setLeftComponent(editorPanel);
         split.setRightComponent(tabResults);
@@ -301,12 +324,28 @@ public class FrmPrincipal extends JFrame {
         mainPanel.add(split, BorderLayout.CENTER);
     }
 
-    private JTextArea resultArea() {
-        JTextArea area = new JTextArea();
-        area.setFont(new Font("JetBrains Mono", Font.PLAIN, 12));
-        area.setEditable(false);
-        area.setBorder(BorderFactory.createEmptyBorder(8, 10, 8, 10));
-        return area;
+    private JTable makeTable(String[] columns) {
+        DefaultTableModel model = new DefaultTableModel(columns, 0) {
+            @Override public boolean isCellEditable(int r, int c) { return false; }
+        };
+        JTable table = new JTable(model);
+        table.setFont(new Font("JetBrains Mono", Font.PLAIN, 12));
+        table.setRowHeight(26);
+        table.setShowVerticalLines(false);
+        table.setShowHorizontalLines(true);
+        table.setIntercellSpacing(new Dimension(0, 0));
+        table.setFillsViewportHeight(true);
+        table.getTableHeader().setFont(new Font("Segoe UI", Font.BOLD, 12));
+        table.getTableHeader().setPreferredSize(new Dimension(0, 30));
+        table.getTableHeader().setReorderingAllowed(false);
+        table.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        return table;
+    }
+
+    private void setColumnWidths(JTable table, int[] widths) {
+        for (int i = 0; i < widths.length && i < table.getColumnCount(); i++) {
+            table.getColumnModel().getColumn(i).setPreferredWidth(widths[i]);
+        }
     }
 
     private void buildStatusBar() {
@@ -342,7 +381,7 @@ public class FrmPrincipal extends JFrame {
     private void openFile() {
         JFileChooser chooser = new JFileChooser();
         chooser.setFileFilter(new FileNameExtensionFilter(
-            "Archivos Lumina (*.lum, *.txt)", "lum", "txt"));
+                "Archivos Lumina (*.lum, *.txt)", "lum", "txt"));
         chooser.setCurrentDirectory(new File("."));
 
         if (chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
@@ -365,10 +404,14 @@ public class FrmPrincipal extends JFrame {
         if (currentFile == null) {
             JFileChooser chooser = new JFileChooser();
             chooser.setFileFilter(new FileNameExtensionFilter(
-                "Archivos Lumina (*.lum)", "lum"));
-            if (chooser.showSaveDialog(this) != JFileChooser.APPROVE_OPTION) return;
+                    "Archivos Lumina (*.lum)", "lum"));
+            if (chooser.showSaveDialog(this) != JFileChooser.APPROVE_OPTION) {
+                return;
+            }
             String path = chooser.getSelectedFile().getAbsolutePath();
-            if (!path.endsWith(".lum")) path += ".lum";
+            if (!path.endsWith(".lum")) {
+                path += ".lum";
+            }
             currentFile = path;
         }
         try {
@@ -391,149 +434,201 @@ public class FrmPrincipal extends JFrame {
         setStatus("Analizando...", false);
 
         ErrorHandler errorHandler = new ErrorHandler();
-        SymbolTable symbolTable   = new SymbolTable();
 
-        StringBuilder tokensOut  = new StringBuilder();
-        StringBuilder errorsOut  = new StringBuilder();
-        StringBuilder symbolsOut = new StringBuilder();
         StringBuilder consoleOut = new StringBuilder();
 
+        consoleOut.append("=== LUMINA COMPILER ===\n\n");
+
+        java.util.List<Symbol> tokenList = new java.util.ArrayList<>();
         try {
-            // Redirigir stderr para suprimir mensajes internos de JCup
-            System.setErr(new java.io.PrintStream(new java.io.OutputStream() {
-                public void write(int b) {}
-            }));
-
-            Lexer lexer = new Lexer(new java.io.StringReader(source));
-            lexer.setErrorHandler(errorHandler);
-
-            // Tokenizar manualmente para mostrar en panel
-            Lexer lexerForTokens = new Lexer(new java.io.StringReader(source));
-            ErrorHandler ehTokens = new ErrorHandler();
-            lexerForTokens.setErrorHandler(ehTokens);
-
-            tokensOut.append(String.format("%-25s %-20s %-8s %s%n",
-                "TIPO", "VALOR", "LINEA", "COLUMNA"));
-            tokensOut.append("─".repeat(65)).append("\n");
-
+            Lexer lexerTokens = new Lexer(new java.io.StringReader(source));
+            lexerTokens.setErrorHandler(errorHandler);
             Symbol tok;
-            int tokenCount = 0;
             while (true) {
-                tok = lexerForTokens.next_token();
-                if (tok == null || tok.sym == com.lumina.parser.sym.EOF) break;
-                String typeName = getTokenName(tok.sym);
-                String value    = tok.value != null ? tok.value.toString() : "";
-                tokensOut.append(String.format("%-25s %-20s %-8d %d%n",
-                    typeName, value, tok.left, tok.right));
-                tokenCount++;
+                tok = lexerTokens.next_token();
+                if (tok == null || tok.sym == com.lumina.parser.sym.EOF) {
+                    break;
+                }
+                tokenList.add(tok);
             }
-            tokensOut.append("\n").append("─".repeat(65)).append("\n");
-            tokensOut.append("Total de tokens: ").append(tokenCount).append("\n");
-
-            // Parser
-            Parser parser = new Parser(lexer);
-            parser.setErrorHandler(errorHandler);
-            parser.setSymbolTable(symbolTable);
-            parser.parse();
-
-            consoleOut.append("=== LUMINA COMPILER ===\n\n");
-            consoleOut.append("Analisis completado.\n");
-
         } catch (Exception ex) {
-            consoleOut.append("Error durante el analisis: ").append(ex.getMessage()).append("\n");
+            consoleOut.append("Error en fase lexica: ").append(ex.getMessage()).append("\n");
         }
 
-        // Errores
-        if (errorHandler.hasErrors()) {
-            errorsOut.append(String.format("%-12s %-8s %-8s %s%n",
-                "TIPO", "LINEA", "COLUMNA", "MENSAJE"));
-            errorsOut.append("─".repeat(70)).append("\n");
-            for (ErrorHandler.LuminaError e : errorHandler.getErrors()) {
-                errorsOut.append(String.format("%-12s %-8d %-8d %s%n",
-                    e.type, e.line, e.column, e.message));
+        // Capturar stderr de CUP -- contiene mensajes de error sintactico
+        // que CUP imprime directamente aunque no lance excepcion
+        java.io.ByteArrayOutputStream cupErrBytes = new java.io.ByteArrayOutputStream();
+        java.io.PrintStream cupErrStream = new java.io.PrintStream(cupErrBytes);
+        java.io.PrintStream originalErr = System.err;
+        System.setErr(cupErrStream);
+
+        try {
+            Lexer lexerParser = new Lexer(new java.io.StringReader(source));
+            lexerParser.setErrorHandler(errorHandler);
+            Parser parser = new Parser(lexerParser);
+            parser.setErrorHandler(errorHandler);
+            parser.parse();
+            consoleOut.append("Analisis sintactico completado.\n");
+        } catch (Exception ex) {
+            String msg = ex.getMessage();
+            if (msg != null && !msg.isBlank()) {
+                consoleOut.append("Error sintactico: ").append(msg).append("\n");
             }
-            errorsOut.append("\nTotal: ").append(errorHandler.errorCount()).append(" error(es)\n");
+            // Si CUP lanzo excepcion pero report_error no la registro (errorHandler vacio),
+            // registrar un error generico con la info disponible
+            if (!errorHandler.hasErrors()) {
+                errorHandler.syntacticError(
+                    msg != null ? msg : "Error de parseo inesperado", 0, 0);
+            }
+        } finally {
+            System.setErr(originalErr);
+            // Si CUP imprimio algo en stderr sin lanzar excepcion ni llamar report_error
+            String cupOutput = cupErrBytes.toString().trim();
+            if (!cupOutput.isEmpty() && !errorHandler.hasErrors()) {
+                errorHandler.syntacticError("Error sintactico detectado por el parser", 0, 0);
+                consoleOut.append("Salida del parser: ").append(cupOutput).append("\n");
+            }
+        }
+
+        // -- Poblar tabla Tokens --
+        DefaultTableModel tokenModel = (DefaultTableModel) tblTokens.getModel();
+        tokenModel.setRowCount(0);
+        int i = 1;
+        for (Symbol t : tokenList) {
+            String typeName = getTokenName(t.sym);
+            String value = t.value != null ? t.value.toString() : "";
+            tokenModel.addRow(new Object[]{i++, typeName, value, t.left, t.right});
+        }
+        lblTokenCount.setText("  Total: " + tokenList.size() + " tokens");
+
+        // -- Poblar tabla Errores --
+        DefaultTableModel errorModel = (DefaultTableModel) tblErrors.getModel();
+        errorModel.setRowCount(0);
+        if (errorHandler.hasErrors()) {
+            for (ErrorHandler.LuminaError e : errorHandler.getErrors()) {
+                errorModel.addRow(new Object[]{e.type.toString(), e.line, e.column, e.message});
+            }
             consoleOut.append("\nSe encontraron ")
-                      .append(errorHandler.errorCount()).append(" error(es).\n");
+                    .append(errorHandler.errorCount()).append(" error(es).\n");
             setStatus("Analisis con " + errorHandler.errorCount() + " error(es).", true);
             tabResults.setSelectedIndex(1);
         } else {
-            errorsOut.append("✓ Sin errores lexicos ni sintacticos.\n");
             consoleOut.append("\n✓ Compilacion exitosa. Sin errores.\n");
             setStatus("Analisis completado sin errores.", false);
             tabResults.setSelectedIndex(0);
         }
 
-        // Tabla de simbolos
-        symbolsOut.append(String.format("%-18s %-10s %-12s %-8s %-8s %s%n",
-            "NOMBRE", "TIPO", "CLASE", "LINEA", "COL", "INICIALIZADO"));
-        symbolsOut.append("─".repeat(70)).append("\n");
-        // La tabla estara vacia hasta que se agreguen acciones semanticas
-        symbolsOut.append("(La tabla se poblara con las acciones semanticas)\n");
+        // -- Poblar tabla Simbolos --
+        DefaultTableModel symbolModel = (DefaultTableModel) tblSymbols.getModel();
+        symbolModel.setRowCount(0);
+        // Se poblara con acciones semanticas
 
-        txtTokens.setText(tokensOut.toString());
-        txtErrors.setText(errorsOut.toString());
-        txtSymbols.setText(symbolsOut.toString());
         txtConsole.setText(consoleOut.toString());
-
-        txtTokens.setCaretPosition(0);
-        txtErrors.setCaretPosition(0);
-        txtSymbols.setCaretPosition(0);
         txtConsole.setCaretPosition(0);
     }
 
     private String getTokenName(int sym) {
         switch (sym) {
-            case com.lumina.parser.sym.FUN:          return "FUN";
-            case com.lumina.parser.sym.VAR:          return "VAR";
-            case com.lumina.parser.sym.RETURN:       return "RETURN";
-            case com.lumina.parser.sym.IF:           return "IF";
-            case com.lumina.parser.sym.ELSE:         return "ELSE";
-            case com.lumina.parser.sym.WHILE:        return "WHILE";
-            case com.lumina.parser.sym.FOR:          return "FOR";
-            case com.lumina.parser.sym.PRINT:        return "PRINT";
-            case com.lumina.parser.sym.AND:          return "AND";
-            case com.lumina.parser.sym.OR:           return "OR";
-            case com.lumina.parser.sym.NOT:          return "NOT";
-            case com.lumina.parser.sym.NULL:         return "NULL";
-            case com.lumina.parser.sym.TYPE_INT:     return "TYPE_INT";
-            case com.lumina.parser.sym.TYPE_FLOAT:   return "TYPE_FLOAT";
-            case com.lumina.parser.sym.TYPE_BOOL:    return "TYPE_BOOL";
-            case com.lumina.parser.sym.TYPE_STRING:  return "TYPE_STRING";
-            case com.lumina.parser.sym.INT_LITERAL:  return "INT_LITERAL";
-            case com.lumina.parser.sym.FLOAT_LITERAL:return "FLOAT_LITERAL";
-            case com.lumina.parser.sym.BOOL_LITERAL: return "BOOL_LITERAL";
-            case com.lumina.parser.sym.STRING_LITERAL:return "STRING_LITERAL";
-            case com.lumina.parser.sym.IDENTIFIER:   return "IDENTIFIER";
-            case com.lumina.parser.sym.PLUS:         return "PLUS";
-            case com.lumina.parser.sym.MINUS:        return "MINUS";
-            case com.lumina.parser.sym.STAR:         return "STAR";
-            case com.lumina.parser.sym.SLASH:        return "SLASH";
-            case com.lumina.parser.sym.PERCENT:      return "PERCENT";
-            case com.lumina.parser.sym.EQUAL:        return "EQUAL";
-            case com.lumina.parser.sym.EQUAL_EQUAL:  return "EQUAL_EQUAL";
-            case com.lumina.parser.sym.BANG_EQUAL:   return "BANG_EQUAL";
-            case com.lumina.parser.sym.LESS:         return "LESS";
-            case com.lumina.parser.sym.LESS_EQUAL:   return "LESS_EQUAL";
-            case com.lumina.parser.sym.GREATER:      return "GREATER";
-            case com.lumina.parser.sym.GREATER_EQUAL:return "GREATER_EQUAL";
-            case com.lumina.parser.sym.PLUS_EQUAL:   return "PLUS_EQUAL";
-            case com.lumina.parser.sym.MINUS_EQUAL:  return "MINUS_EQUAL";
-            case com.lumina.parser.sym.STAR_EQUAL:   return "STAR_EQUAL";
-            case com.lumina.parser.sym.SLASH_EQUAL:  return "SLASH_EQUAL";
-            case com.lumina.parser.sym.ARROW:        return "ARROW";
-            case com.lumina.parser.sym.LEFT_PAREN:   return "LEFT_PAREN";
-            case com.lumina.parser.sym.RIGHT_PAREN:  return "RIGHT_PAREN";
-            case com.lumina.parser.sym.LEFT_BRACE:   return "LEFT_BRACE";
-            case com.lumina.parser.sym.RIGHT_BRACE:  return "RIGHT_BRACE";
-            case com.lumina.parser.sym.LEFT_BRACKET: return "LEFT_BRACKET";
-            case com.lumina.parser.sym.RIGHT_BRACKET:return "RIGHT_BRACKET";
-            case com.lumina.parser.sym.COMMA:        return "COMMA";
-            case com.lumina.parser.sym.SEMICOLON:    return "SEMICOLON";
-            case com.lumina.parser.sym.COLON:        return "COLON";
-            case com.lumina.parser.sym.DOT:          return "DOT";
-            case com.lumina.parser.sym.UMINUS:       return "UMINUS";
-            default:                                  return "UNKNOWN(" + sym + ")";
+            case com.lumina.parser.sym.FUN:
+                return "FUN";
+            case com.lumina.parser.sym.VAR:
+                return "VAR";
+            case com.lumina.parser.sym.RETURN:
+                return "RETURN";
+            case com.lumina.parser.sym.IF:
+                return "IF";
+            case com.lumina.parser.sym.ELSE:
+                return "ELSE";
+            case com.lumina.parser.sym.WHILE:
+                return "WHILE";
+            case com.lumina.parser.sym.FOR:
+                return "FOR";
+            case com.lumina.parser.sym.PRINT:
+                return "PRINT";
+            case com.lumina.parser.sym.AND:
+                return "AND";
+            case com.lumina.parser.sym.OR:
+                return "OR";
+            case com.lumina.parser.sym.NOT:
+                return "NOT";
+            case com.lumina.parser.sym.NULL:
+                return "NULL";
+            case com.lumina.parser.sym.TYPE_INT:
+                return "TYPE_INT";
+            case com.lumina.parser.sym.TYPE_FLOAT:
+                return "TYPE_FLOAT";
+            case com.lumina.parser.sym.TYPE_BOOL:
+                return "TYPE_BOOL";
+            case com.lumina.parser.sym.TYPE_STRING:
+                return "TYPE_STRING";
+            case com.lumina.parser.sym.INT_LITERAL:
+                return "INT_LITERAL";
+            case com.lumina.parser.sym.FLOAT_LITERAL:
+                return "FLOAT_LITERAL";
+            case com.lumina.parser.sym.BOOL_LITERAL:
+                return "BOOL_LITERAL";
+            case com.lumina.parser.sym.STRING_LITERAL:
+                return "STRING_LITERAL";
+            case com.lumina.parser.sym.IDENTIFIER:
+                return "IDENTIFIER";
+            case com.lumina.parser.sym.PLUS:
+                return "PLUS";
+            case com.lumina.parser.sym.MINUS:
+                return "MINUS";
+            case com.lumina.parser.sym.STAR:
+                return "STAR";
+            case com.lumina.parser.sym.SLASH:
+                return "SLASH";
+            case com.lumina.parser.sym.PERCENT:
+                return "PERCENT";
+            case com.lumina.parser.sym.EQUAL:
+                return "EQUAL";
+            case com.lumina.parser.sym.EQUAL_EQUAL:
+                return "EQUAL_EQUAL";
+            case com.lumina.parser.sym.BANG_EQUAL:
+                return "BANG_EQUAL";
+            case com.lumina.parser.sym.LESS:
+                return "LESS";
+            case com.lumina.parser.sym.LESS_EQUAL:
+                return "LESS_EQUAL";
+            case com.lumina.parser.sym.GREATER:
+                return "GREATER";
+            case com.lumina.parser.sym.GREATER_EQUAL:
+                return "GREATER_EQUAL";
+            case com.lumina.parser.sym.PLUS_EQUAL:
+                return "PLUS_EQUAL";
+            case com.lumina.parser.sym.MINUS_EQUAL:
+                return "MINUS_EQUAL";
+            case com.lumina.parser.sym.STAR_EQUAL:
+                return "STAR_EQUAL";
+            case com.lumina.parser.sym.SLASH_EQUAL:
+                return "SLASH_EQUAL";
+            case com.lumina.parser.sym.ARROW:
+                return "ARROW";
+            case com.lumina.parser.sym.LEFT_PAREN:
+                return "LEFT_PAREN";
+            case com.lumina.parser.sym.RIGHT_PAREN:
+                return "RIGHT_PAREN";
+            case com.lumina.parser.sym.LEFT_BRACE:
+                return "LEFT_BRACE";
+            case com.lumina.parser.sym.RIGHT_BRACE:
+                return "RIGHT_BRACE";
+            case com.lumina.parser.sym.LEFT_BRACKET:
+                return "LEFT_BRACKET";
+            case com.lumina.parser.sym.RIGHT_BRACKET:
+                return "RIGHT_BRACKET";
+            case com.lumina.parser.sym.COMMA:
+                return "COMMA";
+            case com.lumina.parser.sym.SEMICOLON:
+                return "SEMICOLON";
+            case com.lumina.parser.sym.COLON:
+                return "COLON";
+            case com.lumina.parser.sym.DOT:
+                return "DOT";
+            case com.lumina.parser.sym.UMINUS:
+                return "UMINUS";
+            default:
+                return "UNKNOWN(" + sym + ")";
         }
     }
 
@@ -549,9 +644,10 @@ public class FrmPrincipal extends JFrame {
     }
 
     private void clearResults() {
-        txtTokens.setText("");
-        txtErrors.setText("");
-        txtSymbols.setText("");
+        ((DefaultTableModel) tblTokens.getModel()).setRowCount(0);
+        ((DefaultTableModel) tblErrors.getModel()).setRowCount(0);
+        ((DefaultTableModel) tblSymbols.getModel()).setRowCount(0);
+        lblTokenCount.setText("  Total: 0 tokens");
         txtConsole.setText("");
     }
 
@@ -566,11 +662,12 @@ public class FrmPrincipal extends JFrame {
 
     private void updateCursor() {
         try {
-            int pos  = txtEditor.getCaretPosition();
+            int pos = txtEditor.getCaretPosition();
             int line = txtEditor.getLineOfOffset(pos) + 1;
-            int col  = pos - txtEditor.getLineStartOffset(line - 1) + 1;
+            int col = pos - txtEditor.getLineStartOffset(line - 1) + 1;
             lblCursor.setText("Ln " + line + ", Col " + col);
-        } catch (Exception ignored) {}
+        } catch (Exception ignored) {
+        }
     }
 
     private void updateStatus() {
@@ -582,8 +679,8 @@ public class FrmPrincipal extends JFrame {
     private void setStatus(String msg, boolean isError) {
         lblStatus.setText(msg);
         lblStatus.setForeground(isError
-            ? (darkMode ? DARK_ERROR : LIGHT_ERROR)
-            : (darkMode ? DARK_SUCCESS : LIGHT_SUCCESS));
+                ? (darkMode ? DARK_ERROR : LIGHT_ERROR)
+                : (darkMode ? DARK_SUCCESS : LIGHT_SUCCESS));
     }
 
     private void showError(String msg) {
@@ -599,17 +696,17 @@ public class FrmPrincipal extends JFrame {
     }
 
     private void applyTheme() {
-        Color bg       = darkMode ? DARK_BG       : LIGHT_BG;
-        Color panel    = darkMode ? DARK_PANEL    : LIGHT_PANEL;
-        Color sidebar  = darkMode ? DARK_SIDEBAR  : LIGHT_SIDEBAR;
-        Color editor   = darkMode ? DARK_EDITOR   : LIGHT_EDITOR;
-        Color lineNum  = darkMode ? DARK_LINE_NUM : LIGHT_LINE_NUM;
-        Color text     = darkMode ? DARK_TEXT     : LIGHT_TEXT;
-        Color subtext  = darkMode ? DARK_SUBTEXT  : LIGHT_SUBTEXT;
-        Color accent   = darkMode ? DARK_ACCENT   : LIGHT_ACCENT;
-        Color border   = darkMode ? DARK_BORDER   : LIGHT_BORDER;
-        Color button   = darkMode ? DARK_BUTTON   : LIGHT_BUTTON;
-        Color tabActive   = darkMode ? DARK_TAB_ACTIVE   : LIGHT_TAB_ACTIVE;
+        Color bg = darkMode ? DARK_BG : LIGHT_BG;
+        Color panel = darkMode ? DARK_PANEL : LIGHT_PANEL;
+        Color sidebar = darkMode ? DARK_SIDEBAR : LIGHT_SIDEBAR;
+        Color editor = darkMode ? DARK_EDITOR : LIGHT_EDITOR;
+        Color lineNum = darkMode ? DARK_LINE_NUM : LIGHT_LINE_NUM;
+        Color text = darkMode ? DARK_TEXT : LIGHT_TEXT;
+        Color subtext = darkMode ? DARK_SUBTEXT : LIGHT_SUBTEXT;
+        Color accent = darkMode ? DARK_ACCENT : LIGHT_ACCENT;
+        Color border = darkMode ? DARK_BORDER : LIGHT_BORDER;
+        Color button = darkMode ? DARK_BUTTON : LIGHT_BUTTON;
+        Color tabActive = darkMode ? DARK_TAB_ACTIVE : LIGHT_TAB_ACTIVE;
         Color tabInactive = darkMode ? DARK_TAB_INACTIVE : LIGHT_TAB_INACTIVE;
 
         // Main
@@ -623,18 +720,16 @@ public class FrmPrincipal extends JFrame {
         btnTheme.setForeground(text);
 
         // Toolbar
-        for (Component c : ((JPanel) ((JPanel) mainPanel.getComponent(0)).getComponent(1)).getComponents()) {
+        toolbar.setBackground(panel);
+        for (Component c : toolbar.getComponents()) {
             if (c instanceof JButton btn) {
                 btn.setBackground(button);
                 btn.setForeground(Color.WHITE);
-                btn.setBorder(BorderFactory.createCompoundBorder(
-                    BorderFactory.createLineBorder(border, 1),
-                    BorderFactory.createEmptyBorder(3, 10, 3, 10)
-                ));
+                btn.setOpaque(true);
+                btn.setContentAreaFilled(true);
+                btn.setBorderPainted(false);
             }
-            if (c instanceof JPanel p) p.setBackground(panel);
         }
-        ((JPanel) mainPanel.getComponent(0)).getComponent(1).setBackground(panel);
 
         // Editor
         editorPanel.setBackground(panel);
@@ -651,19 +746,75 @@ public class FrmPrincipal extends JFrame {
         editorScroll.setBorder(BorderFactory.createMatteBorder(0, 0, 0, 1, border));
 
         // Tabs
-        tabResults.setBackground(panel);
+        tabResults.setBackground(bg);
         tabResults.setForeground(text);
-        for (int i = 0; i < tabResults.getTabCount(); i++) {
-            Component tab = tabResults.getComponentAt(i);
-            if (tab instanceof JScrollPane sp) {
+        UIManager.put("TabbedPane.selected",  panel);
+        UIManager.put("TabbedPane.background", bg);
+        UIManager.put("TabbedPane.foreground", text);
+        tabResults.updateUI();
+
+        // Estilizar las tres JTables
+        for (JTable tbl : new JTable[]{tblTokens, tblErrors, tblSymbols}) {
+            tbl.setBackground(bg);
+            tbl.setForeground(text);
+            tbl.setSelectionBackground(accent);
+            tbl.setSelectionForeground(Color.WHITE);
+            tbl.setGridColor(border);
+            JTableHeader header = tbl.getTableHeader();
+            header.setBackground(panel);
+            header.setForeground(text);
+            header.setBorder(BorderFactory.createMatteBorder(0, 0, 2, 0, accent));
+
+            // Renderer para columnas de texto (izquierda, con padding)
+            DefaultTableCellRenderer leftRenderer = new DefaultTableCellRenderer() {
+                { setBorder(BorderFactory.createEmptyBorder(0, 8, 0, 4)); }
+            };
+            leftRenderer.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+            leftRenderer.setBackground(bg);
+            leftRenderer.setForeground(text);
+
+            // Renderer para columnas numericas (derecha, con padding)
+            DefaultTableCellRenderer rightRenderer = new DefaultTableCellRenderer() {
+                { setBorder(BorderFactory.createEmptyBorder(0, 4, 0, 10)); }
+            };
+            rightRenderer.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+            rightRenderer.setBackground(bg);
+            rightRenderer.setForeground(text);
+
+            for (int col = 0; col < tbl.getColumnCount(); col++) {
+                String colName = tbl.getColumnName(col);
+                boolean isNumeric = colName.equals("#") || colName.equals("LINEA") || colName.equals("COL");
+                tbl.getColumnModel().getColumn(col).setCellRenderer(
+                    isNumeric ? rightRenderer : leftRenderer);
+            }
+            // Scroll panes que envuelven las tablas
+            if (tbl.getParent() != null && tbl.getParent().getParent() instanceof JScrollPane sp) {
                 sp.setBackground(bg);
                 sp.getViewport().setBackground(bg);
-                JTextArea area = (JTextArea) sp.getViewport().getView();
-                area.setBackground(bg);
-                area.setForeground(text);
-                area.setCaretColor(text);
+                sp.setBorder(BorderFactory.createEmptyBorder());
             }
         }
+
+        // tokensPanel (JPanel que envuelve tblTokens + lblTokenCount)
+        lblTokenCount.setBackground(panel);
+        lblTokenCount.setForeground(subtext);
+        if (tblTokens.getParent() != null
+                && tblTokens.getParent().getParent() instanceof JScrollPane sp) {
+            sp.setBackground(bg);
+            sp.getViewport().setBackground(bg);
+            sp.setBorder(BorderFactory.createEmptyBorder());
+        }
+
+        // Consola (JTextArea)
+        if (txtConsole.getParent() != null
+                && txtConsole.getParent().getParent() instanceof JScrollPane sp) {
+            sp.setBackground(bg);
+            sp.getViewport().setBackground(bg);
+            sp.setBorder(BorderFactory.createEmptyBorder());
+        }
+        txtConsole.setBackground(bg);
+        txtConsole.setForeground(text);
+        txtConsole.setCaretColor(text);
 
         // Status bar
         statusBar.setBackground(accent);
