@@ -4,17 +4,14 @@ import com.lumina.error.ErrorHandler;
 import com.lumina.lexer.Lexer;
 import com.lumina.parser.Parser;
 import java.awt.*;
-import java.awt.event.*;
 import java.io.*;
 import java.nio.file.*;
 import java_cup.runtime.Symbol;
 import javax.swing.*;
-import javax.swing.border.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
-import javax.swing.text.*;
 
 public class FrmPrincipal extends JFrame {
 

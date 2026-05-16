@@ -1,37 +1,26 @@
 package com.lumina.parser;
 
-import com.lumina.lexer.Lexer;
+import java_cup.runtime.*;
 import com.lumina.symbols.SymbolTable;
 import com.lumina.error.ErrorHandler;
-import java_cup.runtime.*;
 
 parser code {:
-    public int getExpectedConflicts() { return 1; }
-
-    private SymbolTable symbolTable;
-    private ErrorHandler errorHandler;
-
-    public void setSymbolTable(SymbolTable symbolTable) {
-        this.symbolTable = symbolTable;
-    }
-
-    public void setErrorHandler(ErrorHandler errorHandler) {
-        this.errorHandler = errorHandler;
-    }
-
+    private SymbolTable symbolTable = new SymbolTable();
+    private ErrorHandler errorHandler = new ErrorHandler();
+    
+    public void setSymbolTable(SymbolTable st) { this.symbolTable = st; }
+    public void setErrorHandler(ErrorHandler eh) { this.errorHandler = eh; }
+    
     @Override
     public void report_error(String message, Object info) {
-        if (info instanceof Symbol) {
-            Symbol s = (Symbol) info;
-            errorHandler.syntacticError(message, s.left, s.right);
-        } else {
-            errorHandler.syntacticError(message, 0, 0);
+        if (errorHandler != null) {
+            if (info instanceof Symbol) {
+                Symbol s = (Symbol) info;
+                errorHandler.syntacticError(message, s.left, s.right);
+            } else {
+                errorHandler.syntacticError(message, 0, 0);
+            }
         }
-    }
-
-    @Override
-    public void report_fatal_error(String message, Object info) {
-        report_error(message, info);
     }
 :}
 
@@ -94,7 +83,6 @@ precedence left     LEFT_PAREN;
 program ::= top_list
 ;
 
-/* El nivel superior solo acepta funciones y variables globales */
 top_list ::=
       top_list top_decl
     | /* vacio */
@@ -105,9 +93,6 @@ top_decl ::=
     | var_decl
 ;
 
-/* -------------------------------------------------------
-   FUNCIONES
-   ------------------------------------------------------- */
 fun_decl ::=
     FUN IDENTIFIER LEFT_PAREN param_list_opt RIGHT_PAREN ARROW type block
 ;
@@ -126,9 +111,6 @@ param ::=
     IDENTIFIER COLON type
 ;
 
-/* -------------------------------------------------------
-   TIPOS
-   ------------------------------------------------------- */
 type ::=
       TYPE_INT
     | TYPE_FLOAT
@@ -136,9 +118,6 @@ type ::=
     | TYPE_STRING
 ;
 
-/* -------------------------------------------------------
-   BLOQUE Y SENTENCIAS
-   ------------------------------------------------------- */
 block ::=
     LEFT_BRACE stmt_list RIGHT_BRACE
 ;
@@ -158,16 +137,10 @@ stmt ::=
     | expr
 ;
 
-/* -------------------------------------------------------
-   DECLARACION DE VARIABLES
-   ------------------------------------------------------- */
 var_decl ::=
     VAR IDENTIFIER COLON type EQUAL expr
 ;
 
-/* -------------------------------------------------------
-   ESTRUCTURAS DE CONTROL
-   ------------------------------------------------------- */
 if_stmt ::=
       IF LEFT_PAREN expr RIGHT_PAREN block
     | IF LEFT_PAREN expr RIGHT_PAREN block ELSE block
@@ -189,9 +162,6 @@ print_stmt ::=
     PRINT LEFT_PAREN expr RIGHT_PAREN
 ;
 
-/* -------------------------------------------------------
-   EXPRESIONES
-   ------------------------------------------------------- */
 expr ::= assignment
 ;
 

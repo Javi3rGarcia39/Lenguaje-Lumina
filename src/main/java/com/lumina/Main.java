@@ -21,8 +21,8 @@ public class Main {
             filePath = args[0];
         } else {
             //filePath = "test.lum";
-            //filePath = "test_error_lexico.lum";
-            filePath = "test_error_sintactico.lum";
+            filePath = "test_error_lexico.lum";
+            //filePath = "test_error_sintactico.lum";
         }
 
         // Verificar que el archivo existe
