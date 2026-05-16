@@ -15,9 +15,7 @@ import javax.swing.table.JTableHeader;
 
 public class FrmPrincipal extends JFrame {
 
-    // -------------------------------------------------------
-    // COLORES -- tema oscuro
-    // -------------------------------------------------------
+    // COLORES - tema oscuro
     private static final Color DARK_BG = new Color(30, 30, 30);
     private static final Color DARK_PANEL = new Color(37, 37, 38);
     private static final Color DARK_SIDEBAR = new Color(51, 51, 51);
@@ -34,9 +32,7 @@ public class FrmPrincipal extends JFrame {
     private static final Color DARK_TAB_ACTIVE = new Color(30, 30, 30);
     private static final Color DARK_TAB_INACTIVE = new Color(45, 45, 45);
 
-    // -------------------------------------------------------
-    // COLORES -- tema claro
-    // -------------------------------------------------------
+    // COLORES - tema claro
     private static final Color LIGHT_BG = new Color(255, 255, 255);
     private static final Color LIGHT_PANEL = new Color(243, 243, 243);
     private static final Color LIGHT_SIDEBAR = new Color(248, 248, 248);
@@ -53,15 +49,11 @@ public class FrmPrincipal extends JFrame {
     private static final Color LIGHT_TAB_ACTIVE = new Color(255, 255, 255);
     private static final Color LIGHT_TAB_INACTIVE = new Color(236, 236, 236);
 
-    // -------------------------------------------------------
     // ESTADO
-    // -------------------------------------------------------
     private boolean darkMode = true;
     private String currentFile = null;
 
-    // -------------------------------------------------------
     // COMPONENTES
-    // -------------------------------------------------------
     private JPanel mainPanel;
     private JPanel titleBar;
     private JLabel lblTitle;
@@ -76,11 +68,11 @@ public class FrmPrincipal extends JFrame {
 
     // Tabs de resultados
     private JTabbedPane tabResults;
-    private JTable      tblTokens;
-    private JTable      tblErrors;
-    private JTable      tblSymbols;
-    private JTextArea   txtConsole;
-    private JLabel      lblTokenCount;
+    private JTable tblTokens;
+    private JTable tblErrors;
+    private JTable tblSymbols;
+    private JTextArea txtConsole;
+    private JLabel lblTokenCount;
 
     // Barra de estado
     private JPanel statusBar;
@@ -94,10 +86,8 @@ public class FrmPrincipal extends JFrame {
     private JButton btnAnalyze;
     private JButton btnClear;
     private JButton btnSave;
-
-    // -------------------------------------------------------
+    
     // CONSTRUCTOR
-    // -------------------------------------------------------
     public FrmPrincipal() {
         setTitle("Lumina IDE");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -115,9 +105,7 @@ public class FrmPrincipal extends JFrame {
         setVisible(true);
     }
 
-    // -------------------------------------------------------
     // CONSTRUCCION DE LA UI
-    // -------------------------------------------------------
     private void buildUI() {
         mainPanel = new JPanel(new BorderLayout(0, 0));
         setContentPane(mainPanel);
@@ -136,7 +124,6 @@ public class FrmPrincipal extends JFrame {
         JPanel left = new JPanel(new FlowLayout(FlowLayout.LEFT, 12, 6));
         left.setOpaque(false);
 
-        // Dot decorations al estilo macOS
         JLabel dot1 = dot(new Color(255, 95, 86));
         JLabel dot2 = dot(new Color(255, 189, 46));
         JLabel dot3 = dot(new Color(39, 201, 63));
@@ -156,7 +143,7 @@ public class FrmPrincipal extends JFrame {
 
         JPanel right = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 6));
         right.setOpaque(false);
-        btnTheme = new JToggleButton("☀");
+        btnTheme = new JToggleButton("Claro");
         btnTheme.setFont(new Font("Segoe UI", Font.PLAIN, 14));
         btnTheme.setFocusPainted(false);
         btnTheme.setBorderPainted(false);
@@ -286,7 +273,7 @@ public class FrmPrincipal extends JFrame {
         tabResults.setFont(new Font("Segoe UI", Font.PLAIN, 12));
         tabResults.setTabPlacement(JTabbedPane.TOP);
 
-        // --- Tab Tokens ---
+        // Tab Tokens ---
         tblTokens = makeTable(new String[]{"#", "TIPO", "VALOR", "LINEA", "COL"});
         setColumnWidths(tblTokens, new int[]{35, 150, 120, 55, 55});
         JPanel tokensPanel = new JPanel(new BorderLayout());
@@ -296,24 +283,24 @@ public class FrmPrincipal extends JFrame {
         lblTokenCount.setBorder(BorderFactory.createEmptyBorder(4, 6, 4, 6));
         tokensPanel.add(lblTokenCount, BorderLayout.SOUTH);
 
-        // --- Tab Errores ---
+        // Tab Errores ---
         tblErrors = makeTable(new String[]{"TIPO", "LINEA", "COL", "MENSAJE"});
         setColumnWidths(tblErrors, new int[]{80, 55, 55, 400});
 
-        // --- Tab Tabla Simbolos ---
+        // Tab Tabla Simbolos ---
         tblSymbols = makeTable(new String[]{"NOMBRE", "TIPO", "CLASE", "LINEA", "COL", "INIT"});
         setColumnWidths(tblSymbols, new int[]{120, 80, 80, 55, 55, 60});
 
-        // --- Tab Consola ---
+        // Tab Consola ---
         txtConsole = new JTextArea();
         txtConsole.setFont(new Font("JetBrains Mono", Font.PLAIN, 12));
         txtConsole.setEditable(false);
         txtConsole.setBorder(BorderFactory.createEmptyBorder(8, 10, 8, 10));
 
-        tabResults.addTab("Tokens",         tokensPanel);
-        tabResults.addTab("Errores",        new JScrollPane(tblErrors));
+        tabResults.addTab("Tokens", tokensPanel);
+        tabResults.addTab("Errores", new JScrollPane(tblErrors));
         tabResults.addTab("Tabla Simbolos", new JScrollPane(tblSymbols));
-        tabResults.addTab("Consola",        new JScrollPane(txtConsole));
+        tabResults.addTab("Consola", new JScrollPane(txtConsole));
 
         split.setLeftComponent(editorPanel);
         split.setRightComponent(tabResults);
@@ -323,7 +310,10 @@ public class FrmPrincipal extends JFrame {
 
     private JTable makeTable(String[] columns) {
         DefaultTableModel model = new DefaultTableModel(columns, 0) {
-            @Override public boolean isCellEditable(int r, int c) { return false; }
+            @Override
+            public boolean isCellEditable(int r, int c) {
+                return false;
+            }
         };
         JTable table = new JTable(model);
         table.setFont(new Font("JetBrains Mono", Font.PLAIN, 12));
@@ -372,9 +362,7 @@ public class FrmPrincipal extends JFrame {
         mainPanel.add(statusBar, BorderLayout.SOUTH);
     }
 
-    // -------------------------------------------------------
     // LOGICA DE NEGOCIO
-    // -------------------------------------------------------
     private void openFile() {
         JFileChooser chooser = new JFileChooser();
         chooser.setFileFilter(new FileNameExtensionFilter(
@@ -430,7 +418,9 @@ public class FrmPrincipal extends JFrame {
         clearResults();
         setStatus("Analizando...", false);
 
-        ErrorHandler errorHandler = new ErrorHandler();
+        // Dos manejadores separados
+        ErrorHandler ehLex = new ErrorHandler();
+        ErrorHandler ehParser = new ErrorHandler();
 
         StringBuilder consoleOut = new StringBuilder();
 
@@ -439,7 +429,7 @@ public class FrmPrincipal extends JFrame {
         java.util.List<Symbol> tokenList = new java.util.ArrayList<>();
         try {
             Lexer lexerTokens = new Lexer(new java.io.StringReader(source));
-            lexerTokens.setErrorHandler(errorHandler);
+            lexerTokens.setErrorHandler(ehLex);
             Symbol tok;
             while (true) {
                 tok = lexerTokens.next_token();
@@ -452,8 +442,7 @@ public class FrmPrincipal extends JFrame {
             consoleOut.append("Error en fase lexica: ").append(ex.getMessage()).append("\n");
         }
 
-        // Capturar stderr de CUP -- contiene mensajes de error sintactico
-        // que CUP imprime directamente aunque no lance excepcion
+        // Capturar stderr de CUP
         java.io.ByteArrayOutputStream cupErrBytes = new java.io.ByteArrayOutputStream();
         java.io.PrintStream cupErrStream = new java.io.PrintStream(cupErrBytes);
         java.io.PrintStream originalErr = System.err;
@@ -461,9 +450,9 @@ public class FrmPrincipal extends JFrame {
 
         try {
             Lexer lexerParser = new Lexer(new java.io.StringReader(source));
-            lexerParser.setErrorHandler(errorHandler);
+            lexerParser.setErrorHandler(ehParser);
             Parser parser = new Parser(lexerParser);
-            parser.setErrorHandler(errorHandler);
+            parser.setErrorHandler(ehParser);
             parser.parse();
             consoleOut.append("Analisis sintactico completado.\n");
         } catch (Exception ex) {
@@ -471,23 +460,31 @@ public class FrmPrincipal extends JFrame {
             if (msg != null && !msg.isBlank()) {
                 consoleOut.append("Error sintactico: ").append(msg).append("\n");
             }
-            // Si CUP lanzo excepcion pero report_error no la registro (errorHandler vacio),
-            // registrar un error generico con la info disponible
-            if (!errorHandler.hasErrors()) {
-                errorHandler.syntacticError(
-                    msg != null ? msg : "Error de parseo inesperado", 0, 0);
+            if (!ehParser.hasErrors()) {
+                ehParser.syntacticError(
+                        msg != null ? msg : "Error de parseo inesperado", 0, 0);
             }
         } finally {
             System.setErr(originalErr);
-            // Si CUP imprimio algo en stderr sin lanzar excepcion ni llamar report_error
             String cupOutput = cupErrBytes.toString().trim();
-            if (!cupOutput.isEmpty() && !errorHandler.hasErrors()) {
-                errorHandler.syntacticError("Error sintactico detectado por el parser", 0, 0);
+            if (!cupOutput.isEmpty() && !ehParser.hasErrors()) {
+                ehParser.syntacticError("Error sintactico detectado por el parser", 0, 0);
                 consoleOut.append("Salida del parser: ").append(cupOutput).append("\n");
             }
         }
 
-        // -- Poblar tabla Tokens --
+        // Fusionar errores sin duplicar
+        ErrorHandler errorHandler = new ErrorHandler();
+        for (ErrorHandler.LuminaError e : ehLex.getErrors()) {
+            errorHandler.lexicalError(e.message, e.line, e.column);
+        }
+        for (ErrorHandler.LuminaError e : ehParser.getErrors()) {
+            if (e.type == ErrorHandler.LuminaError.ErrorType.SYNTACTIC) {
+                errorHandler.syntacticError(e.message, e.line, e.column);
+            }
+        }
+
+        // Poblar tabla Tokens --
         DefaultTableModel tokenModel = (DefaultTableModel) tblTokens.getModel();
         tokenModel.setRowCount(0);
         int i = 1;
@@ -498,7 +495,7 @@ public class FrmPrincipal extends JFrame {
         }
         lblTokenCount.setText("  Total: " + tokenList.size() + " tokens");
 
-        // -- Poblar tabla Errores --
+        // Poblar tabla Errores --
         DefaultTableModel errorModel = (DefaultTableModel) tblErrors.getModel();
         errorModel.setRowCount(0);
         if (errorHandler.hasErrors()) {
@@ -515,7 +512,7 @@ public class FrmPrincipal extends JFrame {
             tabResults.setSelectedIndex(0);
         }
 
-        // -- Poblar tabla Simbolos --
+        // Poblar tabla Simbolos --
         DefaultTableModel symbolModel = (DefaultTableModel) tblSymbols.getModel();
         symbolModel.setRowCount(0);
         // Se poblara con acciones semanticas
@@ -629,9 +626,7 @@ public class FrmPrincipal extends JFrame {
         }
     }
 
-    // -------------------------------------------------------
     // UTILIDADES DE UI
-    // -------------------------------------------------------
     private void clearAll() {
         txtEditor.setText("");
         clearResults();
@@ -684,9 +679,7 @@ public class FrmPrincipal extends JFrame {
         JOptionPane.showMessageDialog(this, msg, "Error", JOptionPane.ERROR_MESSAGE);
     }
 
-    // -------------------------------------------------------
     // TEMAS
-    // -------------------------------------------------------
     private void toggleTheme() {
         darkMode = !darkMode;
         applyTheme();
@@ -713,7 +706,7 @@ public class FrmPrincipal extends JFrame {
         titleBar.setBackground(panel);
         lblTitle.setForeground(text);
         lblFile.setForeground(subtext);
-        btnTheme.setText(darkMode ? "☀" : "🌙");
+        btnTheme.setText(darkMode ? "Claro" : "Oscuro");
         btnTheme.setForeground(text);
 
         // Toolbar
@@ -745,7 +738,7 @@ public class FrmPrincipal extends JFrame {
         // Tabs
         tabResults.setBackground(bg);
         tabResults.setForeground(text);
-        UIManager.put("TabbedPane.selected",  panel);
+        UIManager.put("TabbedPane.selected", panel);
         UIManager.put("TabbedPane.background", bg);
         UIManager.put("TabbedPane.foreground", text);
         tabResults.updateUI();
@@ -764,7 +757,9 @@ public class FrmPrincipal extends JFrame {
 
             // Renderer para columnas de texto (izquierda, con padding)
             DefaultTableCellRenderer leftRenderer = new DefaultTableCellRenderer() {
-                { setBorder(BorderFactory.createEmptyBorder(0, 8, 0, 4)); }
+                {
+                    setBorder(BorderFactory.createEmptyBorder(0, 8, 0, 4));
+                }
             };
             leftRenderer.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
             leftRenderer.setBackground(bg);
@@ -772,7 +767,9 @@ public class FrmPrincipal extends JFrame {
 
             // Renderer para columnas numericas (derecha, con padding)
             DefaultTableCellRenderer rightRenderer = new DefaultTableCellRenderer() {
-                { setBorder(BorderFactory.createEmptyBorder(0, 4, 0, 10)); }
+                {
+                    setBorder(BorderFactory.createEmptyBorder(0, 4, 0, 10));
+                }
             };
             rightRenderer.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
             rightRenderer.setBackground(bg);
@@ -782,7 +779,7 @@ public class FrmPrincipal extends JFrame {
                 String colName = tbl.getColumnName(col);
                 boolean isNumeric = colName.equals("#") || colName.equals("LINEA") || colName.equals("COL");
                 tbl.getColumnModel().getColumn(col).setCellRenderer(
-                    isNumeric ? rightRenderer : leftRenderer);
+                        isNumeric ? rightRenderer : leftRenderer);
             }
             // Scroll panes que envuelven las tablas
             if (tbl.getParent() != null && tbl.getParent().getParent() instanceof JScrollPane sp) {
@@ -823,9 +820,7 @@ public class FrmPrincipal extends JFrame {
         revalidate();
     }
 
-    // -------------------------------------------------------
     // MAIN
-    // -------------------------------------------------------
     public static void main(String[] args) {
         SwingUtilities.invokeLater(FrmPrincipal::new);
     }

@@ -11,17 +11,23 @@ parser code {:
     public void setSymbolTable(SymbolTable st) { this.symbolTable = st; }
     public void setErrorHandler(ErrorHandler eh) { this.errorHandler = eh; }
     
-    @Override
-    public void report_error(String message, Object info) {
-        if (errorHandler != null) {
-            if (info instanceof Symbol) {
-                Symbol s = (Symbol) info;
-                errorHandler.syntacticError(message, s.left, s.right);
-            } else {
-                errorHandler.syntacticError(message, 0, 0);
-            }
+@Override
+public void report_error(String message, Object info) {
+    if (errorHandler != null) {
+        String msg;
+        if (message.contains("recover") || message.contains("repair")) {
+            msg = "Error sintactico irrecuperable, el analisis no puede continuar";
+        } else {
+            msg = "Error de sintaxis: token inesperado";
+        }
+        if (info instanceof Symbol) {
+            Symbol s = (Symbol) info;
+            errorHandler.syntacticError(msg, s.left, s.right);
+        } else {
+            errorHandler.syntacticError(msg, 0, 0);
         }
     }
+}
 :}
 
 /* -------------------------------------------------------

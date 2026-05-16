@@ -4,16 +4,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Stack;
 
-/**
- * Tabla de simbolos con soporte de ambitos anidados (scopes).
- * El tipo se almacena como String para desacoplarse del enum TokenType
- * (que pertenece al diseño anterior del lexer propio).
- */
 public class SymbolTable {
 
-    // -------------------------------------------------------
     // CLASE INTERNA: simbolo
-    // -------------------------------------------------------
     public static class Symbol {
 
         public enum Kind { VARIABLE, PARAMETER, FUNCTION }
@@ -42,9 +35,7 @@ public class SymbolTable {
         }
     }
 
-    // -------------------------------------------------------
     // ESTADO
-    // -------------------------------------------------------
     private final Stack<Map<String, Symbol>> scopes;
 
     public SymbolTable() {
@@ -52,9 +43,7 @@ public class SymbolTable {
         enterScope(); // ambito global
     }
 
-    // -------------------------------------------------------
     // GESTION DE AMBITOS
-    // -------------------------------------------------------
     public void enterScope() {
         scopes.push(new HashMap<>());
     }
@@ -67,10 +56,7 @@ public class SymbolTable {
         return scopes.size();
     }
 
-    // -------------------------------------------------------
     // INSERCION
-    // -------------------------------------------------------
-    /** Retorna true si se inserto; false si ya existia en el ambito actual. */
     public boolean define(String name, String type, Symbol.Kind kind,
                           int line, int column) {
         Map<String, Symbol> current = scopes.peek();
@@ -88,9 +74,7 @@ public class SymbolTable {
         }
     }
 
-    // -------------------------------------------------------
     // BUSQUEDA
-    // -------------------------------------------------------
     public Symbol resolve(String name) {
         for (int i = scopes.size() - 1; i >= 0; i--) {
             Symbol s = scopes.get(i).get(name);
@@ -103,9 +87,7 @@ public class SymbolTable {
         return scopes.peek().containsKey(name);
     }
 
-    // -------------------------------------------------------
     // REPORTE
-    // -------------------------------------------------------
     public void printTable() {
         System.out.println("=== TABLA DE SIMBOLOS ===\n");
         for (int i = scopes.size() - 1; i >= 0; i--) {
